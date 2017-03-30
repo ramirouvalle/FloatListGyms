@@ -1,6 +1,8 @@
 package floaterr.floater;
 
 import android.app.Service;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -65,7 +67,7 @@ public class FloatingWindow extends Service {
 
         paramsBubble.gravity = Gravity.TOP | Gravity.LEFT;
         paramsBubble.x = 0;
-        paramsBubble.y = 0;
+        paramsBubble.y = 100;
 
         bubbleIcon = new ImageView(this);
         bubbleIcon.setImageResource(R.mipmap.ic_crown_gym);
@@ -84,6 +86,8 @@ public class FloatingWindow extends Service {
             @Override
             public void onClick(View view) {
                 windowManager.removeView(bubbleIcon);
+                paramsLinearLayout.x = 0;
+                paramsLinearLayout.y = 200;
                 windowManager.addView(linearLayout, paramsLinearLayout);
             }
         });
@@ -144,8 +148,17 @@ public class FloatingWindow extends Service {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String gym = ((Gyms) adapterView.getItemAtPosition(i)).getName();
-                Toast.makeText(getApplicationContext(), "Click en " + gym, Toast.LENGTH_LONG).show();
+                String gymName = ((Gyms) adapterView.getItemAtPosition(i)).getName();
+                String gymLocation = ((Gyms) adapterView.getItemAtPosition(i)).getLocation();
+                if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+                    android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    clipboard.setText(gymLocation);
+                } else {
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    android.content.ClipData clip = android.content.ClipData.newPlainText("Ubicaciòn copiada", gymLocation);
+                    clipboard.setPrimaryClip(clip);
+                }
+                Toast.makeText(getApplicationContext(), "Ubicacion copiada de: "+ gymName, Toast.LENGTH_SHORT).show();
             }
         });
 
