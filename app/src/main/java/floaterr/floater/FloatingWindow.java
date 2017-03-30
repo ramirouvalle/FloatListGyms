@@ -1,10 +1,13 @@
 package floaterr.floater;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,103 +17,105 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class FloatingWindow extends Service {
-    WindowManager wm;
-    LinearLayout ll;
-    LinearLayout ll2;
-    private Gyms[] gyms =
-            new Gyms[]{
-                    new Gyms("Título 1", "Subtítulo largo 1"),
-                    new Gyms("Título 2", "Subtítulo largo 2"),
-                    new Gyms("Título 3", "Subtítulo largo 3"),
-                    new Gyms("Título 4", "Subtítulo largo 4"),
-                    new Gyms("Título 1", "Subtítulo largo 1"),
-                    new Gyms("Título 2", "Subtítulo largo 2"),
-                    new Gyms("Título 3", "Subtítulo largo 3"),
-                    new Gyms("Título 4", "Subtítulo largo 4"),
-                    new Gyms("Título 1", "Subtítulo largo 1"),
-                    new Gyms("Título 2", "Subtítulo largo 2"),
-                    new Gyms("Título 3", "Subtítulo largo 3"),
-                    new Gyms("Título 4", "Subtítulo largo 4"),
-                    new Gyms("Título 15", "Subtítulo largo 15")};
+    WindowManager windowManager;
+    LinearLayout linearLayout;
+    ImageView bubbleIcon;
+    private Gyms[] gyms = new Gyms[]{
+            new Gyms("Capilla Nuestra Señora De Agua Fría", "25.811112,-100.148533"),
+            new Gyms("Capilla Agua Fría", "25.803136,-100.1554"),
+            new Gyms("Estructuras Rojas", "25.789891,-100.141425"),
+            new Gyms("Papalote (aeropuerto)","25.786729,-100.136404"),
+            new Gyms("Coliseo la Ciudad(cento apodaca)","25.782865,-100.181855"),
+            new Gyms("Imagen De Barro","25.778443,-100.179567"),
+            new Gyms("General Juan Mendez Arcs","25.78146,-100.189245"),
+            new Gyms("Modelo Shield","25.768715,-100.190591"),
+            new Gyms("Guardián De Oro Mural","25.763805,-100.173697"),
+            new Gyms("Biblioteca Pueblo Nuevo","25.759215,-100.161716"),
+            new Gyms("Molino de viento","25.749065,-100.163579")
+    };
+
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void onCreate() {
-        // TODO Auto-generated method stub
         super.onCreate();
 
-        wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        DisplayMetrics metrics = new DisplayMetrics();
+        windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(metrics);
+        int height = metrics.heightPixels;
+        int width = metrics.widthPixels;
 
-        ll2 = new LinearLayout(this);
-        ll2.setBackgroundColor(Color.RED);
-        LinearLayout.LayoutParams layoutParameteres2 = new LinearLayout.LayoutParams(
-                100,100);
-        Button btnN = new Button(this);
-        btnN.setText("Nuevo boton");
-        ll2.addView(btnN);
-
-        ll = new LinearLayout(this);
-        ll.setBackgroundColor(Color.argb(100, 255, 255, 102));
-
-        LinearLayout.LayoutParams layoutParameteres = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, 400);
-
-        ll.setLayoutParams(layoutParameteres);
-        ll.setOrientation(LinearLayout.VERTICAL);
-
-        final WindowManager.LayoutParams parameters = new WindowManager.LayoutParams(
-                1000, 1000, WindowManager.LayoutParams.TYPE_PHONE,
+        final WindowManager.LayoutParams paramsBubble = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_PHONE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
 
-        parameters.gravity = Gravity.TOP | Gravity.LEFT;
-        parameters.x = 0;
-        parameters.y = 50;
+        paramsBubble.gravity = Gravity.TOP | Gravity.LEFT;
+        paramsBubble.x = 0;
+        paramsBubble.y = 0;
 
-        TextView tvTitle = new TextView(this);
-        tvTitle.setText("Gimnasios");
-        ViewGroup.LayoutParams tvTitleParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-        tvTitle.setLayoutParams(tvTitleParams);
-        tvTitle.setBackgroundColor(Color.RED);
-        tvTitle.setTextSize(25);
-        ll.addView(tvTitle);
+        bubbleIcon = new ImageView(this);
+        bubbleIcon.setImageResource(R.mipmap.ic_crown_gym);
+
+        final WindowManager.LayoutParams paramsLinearLayout = new WindowManager.LayoutParams(
+                width/2, height/2,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                PixelFormat.TRANSLUCENT);
+
+        paramsLinearLayout.gravity = Gravity.TOP | Gravity.LEFT;
+        paramsLinearLayout.x = 0;
+        paramsLinearLayout.y = 100;
+
+        bubbleIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                windowManager.removeView(bubbleIcon);
+                windowManager.addView(linearLayout, paramsLinearLayout);
+            }
+        });
+
+        windowManager.addView(bubbleIcon, paramsBubble);
+
+        linearLayout = new LinearLayout(this);
+        linearLayout.setBackgroundColor(Color.argb(100, 0, 0, 0));
+        final LinearLayout.LayoutParams layoutParameteres = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        linearLayout.setLayoutParams(layoutParameteres);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+        Button btnMin = new Button(this);
+        btnMin.setText("Minimizar lista");
+        ViewGroup.LayoutParams btnParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        btnMin.setLayoutParams(btnParameters);
+        linearLayout.addView(btnMin);
+
+        Button btnStop = new Button(this);
+        btnStop.setText("Cerrar aplicaciòn");
+        ViewGroup.LayoutParams btnParameters2 = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        btnStop.setLayoutParams(btnParameters2);
+        linearLayout.addView(btnStop);
 
         ListView lv = new ListView(this);
         GymsAdapter adapter = new GymsAdapter(this, gyms);
         lv.setAdapter(adapter);
-        ll.addView(lv);
+        linearLayout.addView(lv);
 
-        Button stop = new Button(this);
-        stop.setText("Stop");
-        ViewGroup.LayoutParams btnParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-        stop.setLayoutParams(btnParameters);
-        ll.addView(stop);
-
-        wm.addView(ll, parameters);
-
-        tvTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                WindowManager.LayoutParams updatedParameters = parameters;
-                parameters.width = 250;
-                parameters.height = 250;
-                wm.removeView(ll);
-                wm.addView(ll2,updatedParameters);
-                //wm.updateViewLayout(ll2, updatedParameters);
-            }
-        });
         lv.setOnTouchListener(new View.OnTouchListener() {
-            WindowManager.LayoutParams updatedParameters = parameters;
+            WindowManager.LayoutParams updatedParameters = paramsLinearLayout;
             double x;
             double y;
             double pressedX;
@@ -118,28 +123,20 @@ public class FloatingWindow extends Service {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-
                         x = updatedParameters.x;
                         y = updatedParameters.y;
-
                         pressedX = event.getRawX();
                         pressedY = event.getRawY();
-
                         break;
-
                     case MotionEvent.ACTION_MOVE:
                         updatedParameters.x = (int) (x + (event.getRawX() - pressedX));
                         updatedParameters.y = (int) (y + (event.getRawY() - pressedY));
-
-                        wm.updateViewLayout(ll, updatedParameters);
-
+                        windowManager.updateViewLayout(linearLayout, updatedParameters);
                     default:
                         break;
                 }
-
                 return false;
             }
         });
@@ -147,15 +144,23 @@ public class FloatingWindow extends Service {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String gym = ((Gyms)adapterView.getItemAtPosition(i)).getName();
+                String gym = ((Gyms) adapterView.getItemAtPosition(i)).getName();
                 Toast.makeText(getApplicationContext(), "Click en " + gym, Toast.LENGTH_LONG).show();
             }
         });
 
-        stop.setOnClickListener(new View.OnClickListener() {
+        btnMin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                wm.removeView(ll);
+                windowManager.removeView(linearLayout);
+                windowManager.addView(bubbleIcon, paramsBubble);
+            }
+        });
+
+        btnStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                windowManager.removeView(linearLayout);
                 stopSelf();
                 System.exit(0);
             }
