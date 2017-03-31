@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
@@ -29,5 +30,13 @@ public class GymsAdapter extends ArrayAdapter<Gyms> {
         tvLocation.setText(gyms[position].getLocation());
 
         return(item);
+    }
+
+    public Gyms[] getGyms() {
+        return gyms;
+    }
+
+    public void setGyms(Gyms[] gyms) {
+        this.gyms = gyms;
     }
 }

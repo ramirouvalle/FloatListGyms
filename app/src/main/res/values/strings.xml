@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">floater</string>
-
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">GyMsTz</string>
     <string name="action_settings">Settings</string>
+    <string name="btn_start">Iniciar</string>
 </resources>
