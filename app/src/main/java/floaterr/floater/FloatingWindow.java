@@ -242,7 +242,7 @@ public class FloatingWindow extends Service {
         linearLayout.addView(llBotones);
 
         zonas = new Spinner(this);
-        zonas.setBackgroundColor(Color.BLACK);
+       // zonas.setBackgroundColor(Color.argb(50, 241, 196, 15));
 
         adaptadorZonas =
                 new ArrayAdapter<String>(this, R.layout.spinner_zonas, zonasString);

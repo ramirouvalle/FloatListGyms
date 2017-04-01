@@ -8,4 +8,4 @@
     android:textColor="#FFF"
     android:padding="5dip"
     android:text="prueba"
-    />
+    android:background="#70f1c40f" />
